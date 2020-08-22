@@ -1,0 +1,44 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          first_boot
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:
+# Short-Description: Generates new ssh host keys on first boot & resizes rootfs
+# Description:       Generates new ssh host keys on first boot & resizes rootfs
+### END INIT INFO
+
+# Generate SSH keys & enable SSH
+ssh-keygen -f /etc/ssh/ssh_host_rsa_key -t rsa -N ""
+ssh-keygen -f /etc/ssh/ssh_host_dsa_key -t dsa -N ""
+service ssh start
+update-rc.d ssh defaults
+
+# Figure out which mmc we are on
+bootedmmc=$(cat /proc/cmdline | sed 's| |\n|g' | sed -n 's/^root=//p')
+
+# First, fix the gpt partition to have shit adjusted for the disk
+fdisk ${bootedmmc%??} << LEL
+w
+LEL
+
+# Resize root partition
+parted -s ${bootedmmc%??} "resizepart 5 -1" quit
+partprobe
+resize2fs ${bootedmmc%??}p5
+sync
+
+# Probe for any added modules
+depmod -a
+
+# Fixup initramfs for fsck on boot to work
+update-initramfs -u
+
+# Add our mount for boot and mount it
+echo "${bootedmmc%??}p4  /boot           vfat    defaults        0       1" >> /etc/fstab
+mount -a
+
+# Cleanup
+update-rc.d first_boot remove
+rm -f $0
