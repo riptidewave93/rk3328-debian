@@ -1,6 +1,6 @@
 # rk3328-debian
 
-Build script to build a Debian 10 image for FriendlyARM NanoPi RK3328 based boards, as well as all dependencies. This includes the following:
+Build script to build a Debian 10 image for FriendlyELEC NanoPi RK3328 based boards, as well as all dependencies. This includes the following:
 
 - Mainline Linux Kernel - [linux-5.8.y](https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/log/?h=linux-5.8.y)
   - Wireguard Mainline
@@ -11,7 +11,7 @@ Note that there are patches/modifications applied to the kernel and u-boot. The 
 
 ## Supported Boards
 Currently images for the following devices are generated:
-* FriendlyARM NanoPi Neo3
+* FriendlyELEC NanoPi Neo3
 
 ## Requirements
 
@@ -24,7 +24,7 @@ Currently images for the following devices are generated:
 
 ## Flashing
 - Take your completed image from `./output` and extract it with gunzip
-- Flash directly to an SD card. Example: `dd if=./neo-core2*.img of=/dev/mmcblk0 bs=4M conv=fdatasync`
+- Flash directly to an SD card. Example: `dd if=./neo3*.img of=/dev/mmcblk0 bs=4M conv=fdatasync`
 
 ## To Do
 * Neo3 Fixes:
