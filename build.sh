@@ -30,7 +30,7 @@ atf_platform="rk3328"
 
 # U-Boot settings
 uboot_repo="https://github.com/u-boot/u-boot.git"
-uboot_branch="v2020.10-rc2"
+uboot_branch="v2020.10-rc5"
 uboot_overlay_dir="u-boot"
 
 # Kernel settings

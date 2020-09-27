@@ -49,8 +49,7 @@ static int dwc3_of_simple_probe(struct platform_device *pdev)
 	 * Some controllers need to toggle the usb3-otg reset before trying to
 	 * initialize the PHY, otherwise the PHY times out.
 	 */
-	if (of_device_is_compatible(np, "rockchip,rk3328-dwc3") ||
-	    of_device_is_compatible(np, "rockchip,rk3399-dwc3"))
+	if (of_device_is_compatible(np, "rockchip,rk3399-dwc3") || of_device_is_compatible(np, "rockchip,rk3328-dwc3"))
 		simple->need_reset = true;
 
 	simple->resets = of_reset_control_array_get(np, false, true,
@@ -172,13 +171,12 @@ static const struct dev_pm_ops dwc3_of_simple_dev_pm_ops = {
 };
 
 static const struct of_device_id of_dwc3_simple_match[] = {
-	{ .compatible = "allwinner,sun50i-h6-dwc3" },
-  { .compatible = "cavium,octeon-7130-usb-uctl" },
-  { .compatible = "rockchip,rk3328-dwc3" },
-  { .compatible = "rockchip,rk3399-dwc3" },
+	{ .compatible = "rockchip,rk3328-dwc3" },
+	{ .compatible = "rockchip,rk3399-dwc3" },
+	{ .compatible = "xlnx,zynqmp-dwc3" },
+	{ .compatible = "cavium,octeon-7130-usb-uctl" },
 	{ .compatible = "sprd,sc9860-dwc3" },
-  { .compatible = "xlnx,zynqmp-dwc3" },
-
+	{ .compatible = "allwinner,sun50i-h6-dwc3" },
 	{ /* Sentinel */ }
 };
 MODULE_DEVICE_TABLE(of, of_dwc3_simple_match);
