@@ -26,6 +26,31 @@ get_mac_binary() {
 	hexdump -v -n 6 -s $offset -e '5/1 "%02x:" 1/1 "%02x"' $path 2>/dev/null
 }
 
+macaddr_setbit() {
+	local mac=$1
+	local bit=${2:-0}
+
+	[ $bit -gt 0 -a $bit -le 48 ] || return
+
+	printf "%012x" $(( 0x${mac//:/} | 2**(48-bit) )) | sed -e 's/\(.\{2\}\)/\1:/g' -e 's/:$//'
+}
+
+macaddr_setbit_la() {
+	macaddr_setbit $1 7
+}
+
+macaddr_unsetbit_mc() {
+	local mac=$1
+
+	printf "%02x:%s" $((0x${mac%%:*} & ~0x01)) ${mac#*:}
+}
+
+macaddr_random() {
+	local randsrc=$(get_mac_binary /dev/urandom 0)
+
+	echo "$(macaddr_unsetbit_mc "$(macaddr_setbit_la "${randsrc}")")"
+}
+
 board_name=$(strings /proc/device-tree/compatible | head -1)
 
 case ${board_name} in
@@ -34,4 +59,24 @@ friendlyelec,nanopi-neo3)
 	if ! grep -q "$eth0_mac" /sys/class/net/eth0/address; then
 		ip link set dev eth0 address $eth0_mac
 	fi
+	;;
+friendlyelec,nanopi-r2s)
+  # Some boards have an i2c, and some do not
+	if [ -e "/sys/bus/i2c/devices/0-0051/eeprom" ]; then
+		base_mac=$(get_mac_binary "/sys/bus/i2c/devices/0-0051/eeprom" 0xfa)
+	else
+		if ! [ -e "/etc/.macaddr" ]; then
+			echo -n "$(macaddr_random)" > /etc/.macaddr
+		fi
+		base_mac=$(cat /etc/.macaddr)
+	fi
+	eth0_mac=$base_mac
+	eth1_mac=$(macaddr_add $base_mac 1)
+	if ! grep -q "$eth0_mac" /sys/class/net/eth0/address; then
+		ip link set dev eth0 address $eth0_mac
+	fi
+	if ! grep -q "$eth1_mac" /sys/class/net/eth1/address; then
+		ip link set dev eth1 address $eth1_mac
+	fi
+	;;
 esac

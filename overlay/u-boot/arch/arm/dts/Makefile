@@ -71,7 +71,10 @@ dtb-$(CONFIG_MACH_S700) += \
 
 dtb-$(CONFIG_ROCKCHIP_PX30) += \
 	px30-evb.dtb \
-	px30-firefly.dtb
+	px30-firefly.dtb \
+	px30-px30-core-ctouch2.dtb \
+	px30-px30-core-edimm2.2.dtb \
+	rk3326-odroid-go2.dtb
 
 dtb-$(CONFIG_ROCKCHIP_RK3036) += \
 	rk3036-sdk.dtb
@@ -92,6 +95,7 @@ dtb-$(CONFIG_ROCKCHIP_RK3288) += \
 	rk3288-phycore-rdk.dtb \
 	rk3288-popmetal.dtb \
 	rk3288-rock2-square.dtb \
+	rk3288-rock-pi-n8.dtb \
 	rk3288-tinker.dtb \
 	rk3288-tinker-s.dtb \
 	rk3288-veyron-jerry.dtb \
@@ -107,6 +111,7 @@ dtb-$(CONFIG_ROCKCHIP_RK3308) += \
 dtb-$(CONFIG_ROCKCHIP_RK3328) += \
 	rk3328-evb.dtb \
 	rk3328-nanopi-neo3.dtb \
+	rk3328-nanopi-r2s.dtb \
 	rk3328-roc-cc.dtb \
 	rk3328-rock64.dtb \
 	rk3328-rock-pi-e.dtb
@@ -135,13 +140,19 @@ dtb-$(CONFIG_ROCKCHIP_RK3399) += \
 	rk3399-puma-haikou.dtb \
 	rk3399-roc-pc.dtb \
 	rk3399-roc-pc-mezzanine.dtb \
-	rk3399-rock-pi-4.dtb \
+	rk3399-rock-pi-4a.dtb \
+	rk3399-rock-pi-4b.dtb \
+	rk3399-rock-pi-4c.dtb \
 	rk3399-rock960.dtb \
-	rk3399-rockpro64.dtb
+	rk3399-rockpro64.dtb \
+	rk3399pro-rock-pi-n10.dtb
 
 dtb-$(CONFIG_ROCKCHIP_RV1108) += \
 	rv1108-elgin-r1.dtb \
 	rv1108-evb.dtb
+
+dtb-$(CONFIG_ARCH_S5P4418) += \
+	s5p4418-nanopi2.dtb
 
 dtb-$(CONFIG_ARCH_MESON) += \
 	meson-gxbb-nanopi-k2.dtb \
@@ -162,6 +173,7 @@ dtb-$(CONFIG_ARCH_MESON) += \
 	meson-g12b-odroid-n2.dtb \
 	meson-g12b-a311d-khadas-vim3.dtb \
 	meson-sm1-khadas-vim3l.dtb \
+	meson-sm1-odroid-c4.dtb \
 	meson-sm1-sei610.dtb
 dtb-$(CONFIG_ARCH_TEGRA) += tegra20-harmony.dtb \
 	tegra20-medcom-wide.dtb \
@@ -210,7 +222,13 @@ dtb-$(CONFIG_ARCH_MVEBU) +=			\
 	armada-8040-clearfog-gt-8k.dtb		\
 	armada-8040-db.dtb			\
 	armada-8040-mcbin.dtb			\
+	armada-8040-puzzle-m801.dtb		\
 	armada-xp-crs305-1g-4s.dtb		\
+	armada-xp-crs305-1g-4s-bit.dtb		\
+	armada-xp-crs326-24g-2s.dtb		\
+	armada-xp-crs326-24g-2s-bit.dtb		\
+	armada-xp-crs328-4c-20s-4s.dtb		\
+	armada-xp-crs328-4c-20s-4s-bit.dtb	\
 	armada-xp-db-xc3-24g4xg.dtb		\
 	armada-xp-gp.dtb			\
 	armada-xp-maxbcm.dtb			\
@@ -264,6 +282,7 @@ dtb-$(CONFIG_ARCH_ZYNQ) += \
 	zynq-zc770-xm013.dtb \
 	zynq-zed.dtb \
 	zynq-zturn.dtb \
+	zynq-zturn-v5.dtb \
 	zynq-zybo.dtb \
 	zynq-zybo-z7.dtb
 dtb-$(CONFIG_ARCH_ZYNQMP) += \
@@ -281,6 +300,7 @@ dtb-$(CONFIG_ARCH_ZYNQMP) += \
 	zynqmp-mini-emmc1.dtb			\
 	zynqmp-mini-nand.dtb			\
 	zynqmp-mini-qspi.dtb			\
+	zynqmp-topic-miamimp-xilinx-xdp-v1r1.dtb	\
 	zynqmp-zcu100-revC.dtb			\
 	zynqmp-zcu102-revA.dtb			\
 	zynqmp-zcu102-revB.dtb			\
@@ -331,7 +351,8 @@ dtb-$(CONFIG_AM33XX) += \
 	am335x-sl50.dtb \
 	am335x-base0033.dtb \
 	am335x-guardian.dtb \
-	am335x-wega-rdk.dtb
+	am335x-wega-rdk.dtb \
+	am335x-regor-rdk.dtb
 dtb-$(CONFIG_AM43XX) += am437x-gp-evm.dtb am437x-sk-evm.dtb	\
 	am43x-epos-evm.dtb \
 	am437x-idk-evm.dtb \
@@ -395,7 +416,11 @@ dtb-$(CONFIG_FSL_LSCH3) += fsl-ls2080a-qds.dtb \
 	fsl-lx2160a-qds-19-x-x.dtb \
 	fsl-lx2160a-qds-19-11-x.dtb \
 	fsl-lx2160a-qds-20-x-x.dtb \
-	fsl-lx2160a-qds-20-11-x.dtb
+	fsl-lx2160a-qds-20-11-x.dtb \
+	fsl-lx2162a-qds.dtb\
+	fsl-lx2162a-qds-17-x.dtb\
+	fsl-lx2162a-qds-18-x.dtb\
+	fsl-lx2162a-qds-20-x.dtb
 dtb-$(CONFIG_FSL_LSCH2) += fsl-ls1043a-qds-duart.dtb \
 	fsl-ls1043a-qds-lpuart.dtb \
 	fsl-ls1043a-rdb.dtb \
@@ -408,6 +433,9 @@ dtb-$(CONFIG_FSL_LSCH2) += fsl-ls1043a-qds-duart.dtb \
 	fsl-ls1012a-2g5rdb.dtb \
 	fsl-ls1012a-frdm.dtb \
 	fsl-ls1012a-frwy.dtb
+dtb-$(CONFIG_TARGET_SL28) += fsl-ls1028a-kontron-sl28.dtb \
+	fsl-ls1028a-kontron-sl28-var3.dtb \
+	fsl-ls1028a-kontron-sl28-var4.dtb \
 
 dtb-$(CONFIG_TARGET_DRAGONBOARD410C) += dragonboard410c.dtb
 dtb-$(CONFIG_TARGET_DRAGONBOARD820C) += dragonboard820c.dtb
@@ -594,6 +622,10 @@ dtb-$(CONFIG_MACH_SUN50I) += \
 	sun50i-a64-pine64-plus.dtb \
 	sun50i-a64-pine64.dtb \
 	sun50i-a64-pinebook.dtb \
+	sun50i-a64-pinephone-1.0.dtb \
+	sun50i-a64-pinephone-1.1.dtb \
+	sun50i-a64-pinephone-1.2.dtb \
+	sun50i-a64-pinetab.dtb \
 	sun50i-a64-sopine-baseboard.dtb \
 	sun50i-a64-teres-i.dtb
 dtb-$(CONFIG_MACH_SUN9I) += \
@@ -616,14 +648,8 @@ dtb-$(CONFIG_MX53) += imx53-cx9020.dtb \
 
 ifneq ($(CONFIG_MX6DL)$(CONFIG_MX6QDL)$(CONFIG_MX6S),)
 dtb-y += \
-	imx6dl-aristainetos2_4.dtb \
-	imx6dl-aristainetos2_7.dtb \
-	imx6dl-aristainetos2b_4.dtb \
-	imx6dl-aristainetos2b_7.dtb \
-	imx6dl-aristainetos2b_csl_4.dtb \
-	imx6dl-aristainetos2b_csl_7.dtb \
-	imx6dl-aristainetos2c_4.dtb \
 	imx6dl-aristainetos2c_7.dtb \
+	imx6dl-aristainetos2c_cslb_7.dtb \
 	imx6dl-brppt2.dtb \
 	imx6dl-cubox-i.dtb \
 	imx6dl-cubox-i-emmc-som-v15.dtb \
@@ -675,6 +701,7 @@ dtb-y += \
 	imx6q-nitrogen6x.dtb \
 	imx6q-novena.dtb \
 	imx6q-pico.dtb \
+	imx6q-phytec-mira-rdk-nand.dtb \
 	imx6q-sabreauto.dtb \
 	imx6q-sabrelite.dtb \
 	imx6q-sabresd.dtb \
@@ -711,6 +738,7 @@ dtb-$(CONFIG_MX6UL) += \
 dtb-$(CONFIG_MX6ULL) += \
 	imx6ull-14x14-evk.dtb \
 	imx6ull-colibri.dtb \
+	imx6ull-myir-mys-6ulx-eval.dtb \
 	imx6ull-phytec-segin-ff-rdk-emmc.dtb \
 	imx6ull-dart-6ul.dtb \
 	imx6ull-somlabs-visionsom.dtb \
@@ -739,6 +767,7 @@ dtb-$(CONFIG_ARCH_IMX8) += \
 	imx8qm-rom7720-a1.dtb \
 	fsl-imx8qxp-ai_ml.dtb \
 	fsl-imx8qxp-colibri.dtb \
+	fsl-imx8qxp-apalis.dtb \
 	fsl-imx8qxp-mek.dtb \
 	imx8-deneb.dtb \
 	imx8-giedi.dtb
@@ -746,6 +775,7 @@ dtb-$(CONFIG_ARCH_IMX8) += \
 dtb-$(CONFIG_ARCH_IMX8M) += \
 	imx8mm-evk.dtb \
 	imx8mm-verdin.dtb \
+	phycore-imx8mm.dtb \
 	imx8mn-ddr4-evk.dtb \
 	imx8mq-evk.dtb \
 	imx8mm-beacon-kit.dtb \
@@ -767,6 +797,7 @@ dtb-$(CONFIG_RCAR_GEN2) += \
 	r8a7794-silk-u-boot.dtb
 
 dtb-$(CONFIG_RCAR_GEN3) += \
+	r8a774a1-beacon-rzg2m-kit.dtb \
 	r8a77950-ulcb-u-boot.dtb \
 	r8a77950-salvator-x-u-boot.dtb \
 	r8a77960-ulcb-u-boot.dtb \
@@ -849,6 +880,17 @@ dtb-$(CONFIG_TARGET_OMAP3_BEAGLE) += \
 dtb-$(CONFIG_TARGET_OMAP3_IGEP00X0) += \
 	omap3-igep0020.dtb
 
+dtb-$(CONFIG_TARGET_OMAP4_PANDA) += \
+	omap4-panda.dtb \
+	omap4-panda-es.dtb
+
+dtb-$(CONFIG_TARGET_OMAP4_SDP4430) += \
+	omap4-sdp.dtb \
+	omap4-sdp-es23plus.dtb
+
+dtb-$(CONFIG_TARGET_OMAP5_UEVM) += \
+	omap5-uevm.dtb
+
 dtb-$(CONFIG_TARGET_SAMA5D2_PTC_EK) += \
 	at91-sama5d2_ptc_ek.dtb
 
@@ -908,7 +950,9 @@ dtb-$(CONFIG_ARCH_BCM68360) += \
 dtb-$(CONFIG_ARCH_BCM6858) += \
 	bcm968580xref.dtb
 
-dtb-$(CONFIG_ARCH_ASPEED) += ast2500-evb.dtb
+dtb-$(CONFIG_TARGET_BCMNS3) += ns3-board.dtb
+
+dtb-$(CONFIG_ASPEED_AST2500) += ast2500-evb.dtb
 
 dtb-$(CONFIG_ARCH_STI) += stih410-b2260.dtb
 
@@ -918,15 +962,22 @@ dtb-$(CONFIG_STM32MP15x) += \
 	stm32mp157c-dk2.dtb \
 	stm32mp157c-ed1.dtb \
 	stm32mp157c-ev1.dtb \
+	stm32mp157c-odyssey.dtb \
+	stm32mp15xx-dhcom-drc02.dtb \
 	stm32mp15xx-dhcom-pdk2.dtb \
+	stm32mp15xx-dhcom-picoitx.dtb \
 	stm32mp15xx-dhcor-avenger96.dtb
 
 dtb-$(CONFIG_SOC_K3_AM6) += k3-am654-base-board.dtb k3-am654-r5-base-board.dtb
 dtb-$(CONFIG_SOC_K3_J721E) += k3-j721e-common-proc-board.dtb \
-			      k3-j721e-r5-common-proc-board.dtb
+			      k3-j721e-r5-common-proc-board.dtb \
+			      k3-j7200-common-proc-board.dtb \
+			      k3-j7200-r5-common-proc-board.dtb
 
 dtb-$(CONFIG_ARCH_MEDIATEK) += \
 	mt7622-rfb.dtb \
+	mt7623a-unielec-u7623-02-emmc.dtb \
+	mt7622-bananapi-bpi-r64.dtb \
 	mt7623n-bananapi-bpi-r2.dtb \
 	mt7629-rfb.dtb \
 	mt8512-bm1-emmc.dtb \
@@ -939,11 +990,14 @@ dtb-$(CONFIG_TARGET_GE_BX50V3) += \
 	imx6q-b650v3.dtb \
 	imx6q-b450v3.dtb
 
+dtb-$(CONFIG_TARGET_GE_B1X5V2) += imx6dl-b1x5v2.dtb
 dtb-$(CONFIG_TARGET_MX53PPD) += imx53-ppd.dtb
 
 dtb-$(CONFIG_TARGET_VEXPRESS_CA5X2) += vexpress-v2p-ca5s.dtb
 dtb-$(CONFIG_TARGET_VEXPRESS_CA9X4) += vexpress-v2p-ca9.dtb
 dtb-$(CONFIG_TARGET_VEXPRESS_CA15_TC2) += vexpress-v2p-ca15_a7.dtb
+
+dtb-$(CONFIG_TARGET_TOTAL_COMPUTE) += total_compute.dtb
 
 dtb-$(CONFIG_TARGET_DURIAN) += phytium-durian.dtb
 

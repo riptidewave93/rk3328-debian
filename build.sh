@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Supported boards
-supported_devices=(nanopi-neo3)
+supported_devices=(nanopi-neo3 nanopi-r2s)
 
 # Date format, used in the image file name
 mydate=`date +%Y%m%d-%H%M`
@@ -30,12 +30,12 @@ atf_platform="rk3328"
 
 # U-Boot settings
 uboot_repo="https://github.com/u-boot/u-boot.git"
-uboot_branch="v2020.10-rc5"
+uboot_branch="v2021.01-rc4"
 uboot_overlay_dir="u-boot"
 
 # Kernel settings
 kernel_repo="https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git"
-kernel_branch="linux-5.8.y"
+kernel_branch="linux-5.10.y"
 kernel_config="rk3328_defconfig"
 kernel_overlay_dir="kernel"
 
@@ -236,7 +236,10 @@ echo "DEB-BUILDER: Setting up device specific tweaks"
 
 # apt mirrors
 echo "deb $deb_mirror $deb_release main contrib non-free
-deb-src $deb_mirror $deb_release main contrib non-free" > etc/apt/sources.list
+deb-src $deb_mirror $deb_release main contrib non-free
+# Backports for firmware
+deb $deb_mirror buster-backports main non-free
+" > etc/apt/sources.list
 
 # Mounts
 echo "proc            /proc           proc    defaults        0       0" > etc/fstab
@@ -274,14 +277,15 @@ rm -f /debconf.set
 echo 'deb http://deb.debian.org/debian/ unstable main' > /etc/apt/sources.list.d/debian-unstable.list
 printf 'Package: *\nPin: release a=unstable\nPin-Priority: 90\n' > /etc/apt/preferences.d/limit-unstable
 apt-get update
-apt-get -y install git binutils ca-certificates e2fsprogs ntp parted curl \
+apt-get -y install git binutils ca-certificates e2fsprogs ntp parted curl haveged \
 locales console-common openssh-server less vim net-tools initramfs-tools \
 wireguard-tools u-boot-tools locales wget
+apt-get -y -t buster-backports install firmware-realtek
 export LANGUAGE=en_US.UTF-8
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 echo 'en_US.UTF-8 UTF-8' > /etc/locale.gen
-locale-gen
+locale-gen en_US.UTF-8
 echo "root:debian" | chpasswd
 rm -f /etc/udev/rules.d/70-persistent-net.rules
 sed -i 's|#PermitRootLogin prohibit-password|PermitRootLogin yes|g' /etc/ssh/sshd_config
