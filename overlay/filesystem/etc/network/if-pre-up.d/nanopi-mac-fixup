@@ -78,5 +78,15 @@ friendlyelec,nanopi-r2s)
 	if ! grep -q "$eth1_mac" /sys/class/net/eth1/address; then
 		ip link set dev eth1 address $eth1_mac
 	fi
+	# Do LED Setup
+	modprobe ledtrig-netdev
+	for ledname in nanopi-r2s:green:wan nanopi-r2s:green:lan; do
+		echo "netdev" > /sys/class/leds/$ledname/trigger
+		echo "1" > /sys/class/leds/$ledname/link
+		echo "1" > /sys/class/leds/$ledname/tx
+		echo "1" > /sys/class/leds/$ledname/rx
+	done
+	echo "eth0" > /sys/class/leds/nanopi-r2s:green:wan/device_name
+	echo "eth1" > /sys/class/leds/nanopi-r2s:green:lan/device_name
 	;;
 esac
