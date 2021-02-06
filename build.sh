@@ -30,7 +30,7 @@ atf_platform="rk3328"
 
 # U-Boot settings
 uboot_repo="https://github.com/u-boot/u-boot.git"
-uboot_branch="v2021.01-rc4"
+uboot_branch="v2021.01"
 uboot_overlay_dir="u-boot"
 
 # Kernel settings
@@ -268,6 +268,11 @@ echo "console-common	console-data/keymap/policy	select	Select keymap from full l
 console-common	console-data/keymap/full	select	us
 " > debconf.set
 
+# Set locale info
+echo "LANGUAGE=en_US.UTF-8
+LANG=en_US.UTF-8
+LC_ALL=en_US.UTF-8" >> etc/environment
+
 # Third Stage Setup Script (most of the setup process)
 cat << EOF > third-stage
 #!/bin/bash
@@ -281,11 +286,8 @@ apt-get -y install git binutils ca-certificates e2fsprogs ntp parted curl havege
 locales console-common openssh-server less vim net-tools initramfs-tools \
 wireguard-tools u-boot-tools locales wget
 apt-get -y -t buster-backports install firmware-realtek
-export LANGUAGE=en_US.UTF-8
-export LANG=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
 echo 'en_US.UTF-8 UTF-8' > /etc/locale.gen
-locale-gen en_US.UTF-8
+locale-gen
 echo "root:debian" | chpasswd
 rm -f /etc/udev/rules.d/70-persistent-net.rules
 sed -i 's|#PermitRootLogin prohibit-password|PermitRootLogin yes|g' /etc/ssh/sshd_config
