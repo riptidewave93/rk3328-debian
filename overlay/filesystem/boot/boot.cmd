@@ -6,7 +6,8 @@ setenv config_load_addr "0x44000000"
 setenv kernel_comp_addr_r "0x05000000"
 setenv ramdisk "initrd.img-KERNELVER"
 setenv kernel "vmlinuz-KERNELVER"
-setenv extra_cmdline "fsck.repair=yes panic=10"
+setenv extra_cmdline "net.ifnames=0 fsck.repair=yes panic=10"
+setenv bootpart_uuid "PLACEHOLDERUUID"
 
 # Import and load any custom settings
 if test -e ${devtype} ${devnum}:${distro_bootpart} config.txt; then
@@ -23,7 +24,7 @@ fi
 load ${devtype} ${devnum}:${distro_bootpart} ${fdt_addr_r} ${fdtfile}
 
 # Set cmdline
-setenv bootargs root=/dev/mmcblk0p5 rootfstype=ext4 rw rootwait earlyprintk ${extra_cmdline}
+setenv bootargs root=PARTUUID=${bootpart_uuid}-02 rw rootwait ${extra_cmdline}
 
 # Boot our image
 load ${devtype} ${devnum}:${distro_bootpart} ${kernel_addr_r} ${kernel}

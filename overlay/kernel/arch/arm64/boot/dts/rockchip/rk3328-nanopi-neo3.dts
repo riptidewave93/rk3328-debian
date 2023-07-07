@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 /*
- * Copyright (c) 2020 Chris Blake <chrisrblake93@gmail.com>
+ * Copyright (c) 2023 Chris Blake <chrisrblake93@gmail.com>
+ * Copyright (c) 2020 David Bauer <mail@david-bauer.net>
  */
 
 /dts-v1/;
@@ -10,21 +11,58 @@
 #include "rk3328.dtsi"
 
 / {
-  model = "FriendlyElec NanoPi NEO3";
-  compatible = "friendlyelec,nanopi-neo3", "rockchip,rk3328";
+	model = "FriendlyElec NanoPi NEO3";
+	compatible = "friendlyarm,nanopi-neo3", "rockchip,rk3328";
 
-  chosen {
-    stdout-path = "serial2:1500000n8";
-  };
+	aliases {
+		mmc0 = &sdmmc;
+	};
 
-  gmac_clk: gmac-clock {
+	chosen {
+		stdout-path = "serial2:1500000n8";
+	};
+
+	gmac_clk: gmac-clock {
 		compatible = "fixed-clock";
 		clock-frequency = <125000000>;
 		clock-output-names = "gmac_clkin";
 		#clock-cells = <0>;
 	};
 
-  vcc_io_sdio: sdmmcio-regulator {
+	keys {
+		compatible = "gpio-keys";
+		pinctrl-0 = <&reset_button_pin>;
+		pinctrl-names = "default";
+
+		reset {
+			label = "reset";
+			gpios = <&gpio0 RK_PA0 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_RESTART>;
+			debounce-interval = <50>;
+		};
+	};
+
+	leds {
+		compatible = "gpio-leds";
+		pinctrl-0 = <&sys_led_pin>;
+		pinctrl-names = "default";
+
+		pwr_led: led-0 {
+			gpios = <&rk805 0 GPIO_ACTIVE_LOW>;
+			label = "nanopi-neo3:red:pwr";
+			linux,default-trigger = "default-on";
+			default-state = "on";
+		};
+
+		sys_led: led-1 {
+			gpios = <&gpio0 RK_PA2 GPIO_ACTIVE_HIGH>;
+			label = "nanopi-neo3:green:stat";
+			linux,default-trigger = "mmc0";
+		};
+
+	};
+
+	vcc_io_sdio: sdmmcio-regulator {
 		compatible = "regulator-gpio";
 		enable-active-high;
 		gpios = <&gpio1 RK_PD4 GPIO_ACTIVE_HIGH>;
@@ -37,8 +75,8 @@
 		regulator-settling-time-us = <5000>;
 		regulator-type = "voltage";
 		startup-delay-us = <2000>;
-		states = <1800000 0x1
-			  3300000 0x0>;
+		states = <1800000 0x1>,
+			 <3300000 0x0>;
 		vin-supply = <&vcc_io_33>;
 	};
 
@@ -63,118 +101,67 @@
 		regulator-max-microvolt = <5000000>;
 	};
 
-  leds {
-    compatible = "gpio-leds";
-
-    pinctrl-names = "default";
-    pinctrl-0 = <&led_pins>;
-
-    stat {
-      gpios = <&gpio0 RK_PA2 GPIO_ACTIVE_HIGH>;
-      label = "nanopi-neo3:green:stat";
-      linux,default-trigger = "mmc0";
-    };
-  };
-
-  rk805-leds {
-    compatible = "gpio-leds";
-
-    pwr {
-      gpios = <&rk805 0 GPIO_ACTIVE_LOW>;
-      label = "nanopi-neo3:red:pwr";
-      linux,default-trigger = "default-on";
-      default-state = "on";
-    };
-  };
-
-  gpio_keys {
-    compatible = "gpio-keys-polled";
-    poll-interval = <100>;
-
-    pinctrl-names = "default";
-    pinctrl-0 = <&button_pins>;
-
-    reset {
-      label = "Reset Button";
-      gpios = <&gpio0 RK_PA0 GPIO_ACTIVE_LOW>;
-      linux,code = <KEY_RESTART>;
-      debounce-interval = <50>;
-    };
-  };
-
-  usbdrd3: usb@ff600000 {
-    compatible = "rockchip,rk3328-dwc3";
-    clocks = <&cru SCLK_USB3OTG_REF>, <&cru SCLK_USB3OTG_SUSPEND>,
-       <&cru ACLK_USB3OTG>;
-    clock-names = "ref_clk", "suspend_clk",
-            "bus_clk";
-    #address-cells = <2>;
-    #size-cells = <2>;
-    ranges;
-    status = "okay";
-
-    usbdrd_dwc3: dwc3@ff600000 {
-      compatible = "snps,dwc3";
-      reg = <0x0 0xff600000 0x0 0x100000>;
-      interrupts = <GIC_SPI 67 IRQ_TYPE_LEVEL_HIGH>;
-      dr_mode = "host";
-      phy_type = "utmi_wide";
-      snps,dis_enblslpm_quirk;
-      snps,dis-u2-freeclk-exists-quirk;
-      snps,dis_u2_susphy_quirk;
-      snps,dis-u3-autosuspend-quirk;
-      snps,dis_u3_susphy_quirk;
-      snps,dis-del-phy-power-chg-quirk;
-      snps,dis-tx-ipgap-linecheck-quirk;
-      snps,xhci-slow-suspend-quirk;
-      snps,xhci-trb-ent-quirk;
-      status = "okay";
-    };
-  };
+	vdd_5v_lan: vdd-5v-lan {
+		compatible = "regulator-fixed";
+		enable-active-high;
+		gpio = <&gpio2 RK_PC6 GPIO_ACTIVE_HIGH>;
+		pinctrl-0 = <&lan_vdd_pin>;
+		pinctrl-names = "default";
+		regulator-name = "vdd_5v_lan";
+		regulator-always-on;
+		regulator-boot-on;
+		vin-supply = <&vdd_5v>;
+	};
 };
 
 &cpu0 {
-  cpu-supply = <&vdd_arm>;
+	cpu-supply = <&vdd_arm>;
 };
 
 &cpu1 {
-  cpu-supply = <&vdd_arm>;
+	cpu-supply = <&vdd_arm>;
 };
 
 &cpu2 {
-  cpu-supply = <&vdd_arm>;
+	cpu-supply = <&vdd_arm>;
 };
 
 &cpu3 {
-  cpu-supply = <&vdd_arm>;
+	cpu-supply = <&vdd_arm>;
+};
+
+&display_subsystem {
+	status = "disabled";
 };
 
 &gmac2io {
-  assigned-clocks = <&cru SCLK_MAC2IO>, <&cru SCLK_MAC2IO_EXT>;
-  assigned-clock-parents = <&gmac_clk>, <&gmac_clk>;
-  clock_in_out = "input";
-  phy-supply = <&vcc_io_33>;
-  phy-handle = <&rtl8211e>;
-  phy-mode = "rgmii";
-  pinctrl-names = "default";
-  pinctrl-0 = <&rgmiim1_pins>;
-  snps,aal;
-  snps,reset-gpio = <&gpio1 RK_PC2 GPIO_ACTIVE_LOW>;
-  snps,reset-active-low;
-  snps,reset-delays-us = <0 10000 50000>;
-  tx_delay = <0x24>;
-  rx_delay = <0x18>;
-  status = "okay";
+	assigned-clocks = <&cru SCLK_MAC2IO>, <&cru SCLK_MAC2IO_EXT>;
+	assigned-clock-parents = <&gmac_clk>, <&gmac_clk>;
+	clock_in_out = "input";
+	phy-handle = <&rtl8211e>;
+	phy-mode = "rgmii";
+	phy-supply = <&vcc_io_33>;
+	pinctrl-0 = <&rgmiim1_pins>;
+	pinctrl-names = "default";
+	rx_delay = <0x18>;
+	snps,aal;
+	tx_delay = <0x24>;
+	status = "okay";
 
-  mdio {
-    compatible = "snps,dwmac-mdio";
-    #address-cells = <1>;
-    #size-cells = <0>;
+	mdio {
+		compatible = "snps,dwmac-mdio";
+		#address-cells = <1>;
+		#size-cells = <0>;
 
-    rtl8211e: ethernet-phy@0 {
-      reg = <0>;
-    };
-  };
+		rtl8211e: ethernet-phy@0 {
+			reg = <0>;
+			pinctrl-0 = <&eth_phy_reset_pin>;
+			pinctrl-names = "default";
+			reset-assert-us = <10000>;
+			reset-deassert-us = <50000>;
+			reset-gpios = <&gpio1 RK_PC2 GPIO_ACTIVE_LOW>;
+		};
+	};
 };
 
 &i2c0 {
@@ -318,76 +305,100 @@
 };
 
 &pinctrl {
-  leds {
-    led_pins: led-pins {
-      rockchip,pins = <0 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
-    };
-  };
+	button {
+		reset_button_pin: reset-button-pin {
+			rockchip,pins = <0 RK_PA0 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
 
-  button {
-    button_pins: button-pins {
-      rockchip,pins = <0 RK_PA0 RK_FUNC_GPIO &pcfg_pull_none>;
-    };
-  };
+	gmac2io {
+		eth_phy_reset_pin: eth-phy-reset-pin {
+			rockchip,pins = <1 RK_PC2 RK_FUNC_GPIO &pcfg_pull_down>;
+		};
+	};
 
-  pmic {
-    pmic_int_l: pmic-int-l {
-      rockchip,pins = <1 RK_PD0 RK_FUNC_GPIO &pcfg_pull_up>;
-    };
-  };
+	leds {
+		sys_led_pin: sys-led-pin {
+			rockchip,pins = <0 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
 
-  sd {
-    sdio_vcc_pin: sdio-vcc-pin {
-      rockchip,pins = <1 RK_PD4 RK_FUNC_GPIO &pcfg_pull_up>;
-    };
-  };
+	lan {
+		lan_vdd_pin: lan-vdd-pin {
+			rockchip,pins = <2 RK_PC6 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
 
-  usb {
-    host_vbus_drv: host-vbus-drv {
-      rockchip,pins = <0 RK_PA0 RK_FUNC_GPIO &pcfg_pull_none>;
-    };
+	pmic {
+		pmic_int_l: pmic-int-l {
+			rockchip,pins = <1 RK_PD0 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+	};
 
-    otg_vbus_drv: otg-vbus-drv {
-      rockchip,pins = <1 RK_PD2 RK_FUNC_GPIO &pcfg_pull_none>;
-    };
-  };
+	sd {
+		sdio_vcc_pin: sdio-vcc-pin {
+			rockchip,pins = <1 RK_PD4 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+	};
+};
+
+&pwm2 {
+	status = "okay";
 };
 
 &sdmmc {
-  bus-width = <4>;
-  cap-mmc-highspeed;
-  cap-sd-highspeed;
-  disable-wp;
-  max-frequency = <150000000>;
-  pinctrl-names = "default";
-  pinctrl-0 = <&sdmmc0_clk &sdmmc0_cmd &sdmmc0_dectn &sdmmc0_bus4>;
-  vmmc-supply = <&vcc_sd>;
+	bus-width = <4>;
+	cap-sd-highspeed;
+	disable-wp;
+	pinctrl-0 = <&sdmmc0_clk>, <&sdmmc0_cmd>, <&sdmmc0_dectn>, <&sdmmc0_bus4>;
+	pinctrl-names = "default";
+	sd-uhs-sdr12;
+	sd-uhs-sdr25;
+	sd-uhs-sdr50;
+	sd-uhs-sdr104;
+	vmmc-supply = <&vcc_sd>;
 	vqmmc-supply = <&vcc_io_sdio>;
-  status = "okay";
+	status = "okay";
 };
 
 &tsadc {
-  rockchip,hw-tshut-mode = <0>;
-  rockchip,hw-tshut-polarity = <0>;
-  status = "okay";
-};
-
-&uart2 {
-  status = "okay";
+	rockchip,hw-tshut-mode = <0>;
+	rockchip,hw-tshut-polarity = <0>;
+	status = "okay";
 };
 
 &u2phy {
-  status = "okay";
+	status = "okay";
+};
 
-  u2phy_host: host-port {
-    status = "okay";
-  };
+&u2phy_host {
+	status = "okay";
+};
+
+&u2phy_otg {
+	status = "okay";
+};
+
+&uart2 {
+	status = "okay";
+};
+
+&usb20_otg {
+	status = "okay";
+	dr_mode = "host";
+};
+
+&usbdrd3 {
+	dr_mode = "host";
+	status = "okay";
+	#address-cells = <1>;
+	#size-cells = <0>;
 };
 
 &usb_host0_ehci {
-  status = "okay";
+	status = "okay";
 };
 
 &usb_host0_ohci {
-  status = "okay";
+	status = "okay";
 };

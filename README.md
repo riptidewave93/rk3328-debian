@@ -1,11 +1,10 @@
 # rk3328-debian
 
-Build script to build a Debian 10 image for FriendlyELEC NanoPi RK3328 based boards, as well as all dependencies. This includes the following:
+Build script to build a Debian 12 image for FriendlyELEC NanoPi RK3328 based boards, as well as all dependencies. This includes the following:
 
-- Mainline Linux Kernel - [linux-5.10.y](https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/log/?h=linux-5.10.y)
-  - Wireguard Mainline
+- Mainline Linux Kernel - [linux-6.4.y](https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/log/?h=linux-6.4.y)
 - Arm Trusted Firmware - [arm-trusted-firmware/master branch](https://github.com/ARM-software/arm-trusted-firmware/tree/master)
-- Mainline U-Boot - [v2021.01-rc4](https://github.com/u-boot/u-boot/tree/v2021.01-rc4)
+- Mainline U-Boot - [v2023.07-rc6](https://github.com/u-boot/u-boot/tree/v2023.07-rc6)
 
 Note that there are patches/modifications applied to the kernel and u-boot. The changes made can be seen in the `./patches` and `./overlay` directories. Also, a `./downloads` directory is generated to store a copy of the toolchain during the first build.
 
@@ -16,12 +15,21 @@ Currently images for the following devices are generated:
 
 ## Requirements
 
-- The following packages on your Debian/Ubuntu build host: `bc binfmt-support build-essential debootstrap device-tree-compiler dosfstools fakeroot git kpartx libsdl2-dev libssl-dev lvm2 parted python-dev python3-dev qemu qemu-user-static swig wget bison flex`
+- The following packages below are required to use this build script. Note that this repo uses a Dockerfile to handle most of the heavy lifting, but some system requirements still exist.
+
+`docker-ce losetup wget sudo make qemu-user-static`
+
+Note that without qemu-user-static, debootstrap will fail!
 
 ## Usage
-- Just run `sudo ./build.sh`.
+- Just run `make`.
 - Completed builds output to `./output`
-- To cleanup and clear all builds, run `sudo ./build.sh clean`
+- To cleanup and clear all builds, run `make clean`
+
+Other helpful commands:
+
+- Have a build fail and have stale mounts? `make mountclean`
+- Want to delete the download cache and do a 100% fresh build? `make distclean`
 
 ## Flashing
 - Take your completed image from `./output` and extract it with gunzip

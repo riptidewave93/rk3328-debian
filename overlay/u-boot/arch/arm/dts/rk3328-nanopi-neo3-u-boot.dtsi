@@ -1,33 +1,42 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * (C) Copyright 2020 Chris Blake <chrisrblake93@gmail.com>
+ * This is a copy of rk3328-nanopi-r2s-u-boot since it's upstreamed.
+ *
+ * (C) Copyright 2018-2019 Rockchip Electronics Co., Ltd
+ * (C) Copyright 2020 David Bauer
  */
 
 #include "rk3328-u-boot.dtsi"
 #include "rk3328-sdram-ddr4-666.dtsi"
 / {
-  chosen {
-    u-boot,spl-boot-order = "same-as-spl", &sdmmc, &emmc;
-  };
+	chosen {
+		u-boot,spl-boot-order = "same-as-spl", &sdmmc, &emmc;
+	};
 };
 
 &gpio0 {
-  u-boot,dm-spl;
+	bootph-pre-ram;
 };
 
 &pinctrl {
-  u-boot,dm-spl;
+	bootph-pre-ram;
 };
 
-&sdmmc0m1_gpio {
-  u-boot,dm-spl;
+&sdmmc0m1_pin {
+	bootph-pre-ram;
 };
 
 &pcfg_pull_up_4ma {
-  u-boot,dm-spl;
+	bootph-pre-ram;
 };
 
 /* Need this and all the pinctrl/gpio stuff above to set pinmux */
 &vcc_sd {
-  u-boot,dm-spl;
+	bootph-pre-ram;
+};
+
+&gmac2io {
+	snps,reset-gpio = <&gpio1 RK_PC2 GPIO_ACTIVE_LOW>;
+	snps,reset-active-low;
+	snps,reset-delays-us = <0 10000 50000>;
 };
