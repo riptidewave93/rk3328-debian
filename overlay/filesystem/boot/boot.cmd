@@ -6,8 +6,8 @@ setenv config_load_addr "0x44000000"
 setenv kernel_comp_addr_r "0x05000000"
 setenv ramdisk "initrd.img-KERNELVER"
 setenv kernel "vmlinuz-KERNELVER"
-setenv extra_cmdline "net.ifnames=0 fsck.repair=yes panic=10"
 setenv bootpart_uuid "PLACEHOLDERUUID"
+setenv extra_cmdline "net.ifnames=0 fsck.repair=yes panic=10"
 
 # Import and load any custom settings
 if test -e ${devtype} ${devnum}:${distro_bootpart} config.txt; then
@@ -15,7 +15,7 @@ if test -e ${devtype} ${devnum}:${distro_bootpart} config.txt; then
 	env import -t ${config_load_addr} ${filesize}
 fi
 
-# If this is first boot, save our env (Broke ATM)
+# If this is first boot, save our env
 if test ! -e ${devtype} ${devnum}:${distro_bootpart} uboot.env; then
 	saveenv
 fi

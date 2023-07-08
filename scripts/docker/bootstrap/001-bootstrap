@@ -4,7 +4,7 @@ echo "Starting 001-bootstrap within chroot!"
 
 export DEBIAN_FRONTEND=noninteractive
 
-# Attempt to fix slow bootstrap
+# Fix slow bootstrap
 ulimit -n 1024
 
 # Conf debconf
@@ -15,8 +15,9 @@ rm -f /debconf.set
 apt-get clean
 apt-get update
 apt-get -y install git binutils ca-certificates e2fsprogs haveged parted curl \
-locales console-common openssh-server less vim net-tools initramfs-tools \
-wireguard-tools u-boot-tools locales wget 
+    locales console-common openssh-server less vim net-tools wireguard-tools \
+    u-boot-tools locales wget u-boot-menu
+apt-get -y install --no-install-recommends initramfs-tools # Split out so we don't get a kernel
 
 # Locale gen
 locale-gen
@@ -37,12 +38,10 @@ mkdir -p /boot/rockchip
 mv /root/kernel/*.dtb /boot/rockchip/
 sed -i "s|KERNELVER|${KERN_VERSION}|g" /boot/boot.cmd
 mkimage -C none -A arm -T script -d /boot/boot.cmd /boot/boot.scr
-cp /boot/vmlinuz-${KERN_VERSION}* /boot/Image.gz
-gunzip /boot/Image.gz
-cp /boot/initrd.img-${KERN_VERSION}* /boot/initramfs.cpio.gz
 
 # Cleanup stuff we don't want floating around
 apt-get autoclean
+apt-get --purge -y autoremove linux-image-rt-arm64 # Safety to ensure it's GONE
 apt-get --purge -y autoremove
 systemctl stop ssh.service
 systemctl enable first-boot.service
