@@ -24,6 +24,7 @@ RUN apt-get update && apt-get install -yq \
     kpartx \
     libconfuse-common \
     libconfuse-dev \
+    libncurses-dev \
     libssl-dev \
     lvm2 \
     mtools \

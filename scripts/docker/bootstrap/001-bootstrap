@@ -14,10 +14,10 @@ rm -f /debconf.set
 # Initial package install
 apt-get clean
 apt-get update
+apt-mark hold linux-image-rt-arm64 hold # We do not want this!
 apt-get -y install git binutils ca-certificates e2fsprogs haveged parted curl \
     locales console-common openssh-server less vim net-tools wireguard-tools \
-    u-boot-tools locales wget u-boot-menu
-apt-get -y install --no-install-recommends initramfs-tools # Split out so we don't get a kernel
+    u-boot-tools wget u-boot-menu initramfs-tools
 
 # Locale gen
 locale-gen
@@ -41,11 +41,10 @@ mkimage -C none -A arm -T script -d /boot/boot.cmd /boot/boot.scr
 
 # Cleanup stuff we don't want floating around
 apt-get autoclean
-apt-get --purge -y autoremove linux-image-rt-arm64 # Safety to ensure it's GONE
 apt-get --purge -y autoremove
 systemctl stop ssh.service
 systemctl enable first-boot.service
 rm -f /etc/ssh/ssh_host_*
 rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-rm -rf /boot.bak
+rm -rf /boot.bak /boot/extlinux
 rm -rf /root/kernel

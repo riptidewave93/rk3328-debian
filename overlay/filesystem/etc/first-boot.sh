@@ -33,12 +33,13 @@ p
 2
 ${rootfs_start}
 
-n
 w
 DISK
 
-  # Add our mount for boot and mount it
-  echo "PARTUUID=${rootpartuuid%??}01  /boot           vfat    defaults        0       1" >> /etc/fstab
+  # Add our mount for boot and mount it if it doesn't exist
+  if ! grep -q "/boot" /etc/fstab; then
+    echo "PARTUUID=${rootpartuuid%??}01  /boot           vfat    defaults        0       1" >> /etc/fstab
+  fi
   mount -a
 
   # Update kernel partition mapping & kickoff resize
@@ -53,10 +54,12 @@ depmod -a
 # Fixup initramfs for fsck on boot to work
 KERN_VERSION=$(find /lib/modules/ -maxdepth 1 | sort | tail -1 | xargs basename )
 update-initramfs -u -k ${KERN_VERSION}
-rm /boot/initramfs.cpio.gz
+if [ -f /boot/initramfs.cpio.gz ]; then
+  rm /boot/initramfs.cpio.gz
+fi
 
 # If we are here, we can safely move off of boot.scr to extlinux once our dtb is set
-export UBOOT_DTB_NAME=$(fw_printenv fdtfile | cut -d "=" -f2)
+export UBOOT_DTB_NAME=$(fw_printenv -n fdtfile)
 sed -i "s|UBOOTDTBNAMEGOESHERE|${UBOOT_DTB_NAME}|g" /etc/default/u-boot.rk3328
 mv /etc/default/u-boot.rk3328 /etc/default/u-boot
 u-boot-update
