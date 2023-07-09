@@ -14,10 +14,16 @@ rm -f /debconf.set
 # Initial package install
 apt-get clean
 apt-get update
-apt-mark hold linux-image-rt-arm64 hold # We do not want this!
+dpkg -i /root/kernel/linux-*.deb # Install our kernel first
+apt-mark hold linux-image-* # We do not want these, as we run our own kernel!
+
+# Export kernel info
+export KERN_VERSION=$(find /lib/modules/ -maxdepth 1 | sort | tail -1 | xargs basename )
+
+# Now that we have our wanted kernel in place, do the rest of our installs
 apt-get -y install git binutils ca-certificates e2fsprogs haveged parted curl \
     locales console-common openssh-server less vim net-tools wireguard-tools \
-    u-boot-tools wget u-boot-menu initramfs-tools
+    ntpsec u-boot-tools wget u-boot-menu initramfs-tools
 
 # Locale gen
 locale-gen
@@ -27,11 +33,6 @@ echo "root:debian" | chpasswd
 
 # Allow root SSH login with PW
 sed -i 's|#PermitRootLogin prohibit-password|PermitRootLogin yes|g' /etc/ssh/sshd_config
-
-# Install custom packages of fun
-dpkg -i /root/kernel/linux-*.deb
-export KMOD_PATH=$(find /lib/modules/ -maxdepth 1 | sort | tail -1)
-export KERN_VERSION=$(echo ${KMOD_PATH} | xargs basename )
 
 # Setup boot partition
 mkdir -p /boot/rockchip
@@ -46,5 +47,5 @@ systemctl stop ssh.service
 systemctl enable first-boot.service
 rm -f /etc/ssh/ssh_host_*
 rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-rm -rf /boot.bak /boot/extlinux
+rm -rf /boot.bak /boot/extlinux # Bad initial generation, fall back to boot.scr
 rm -rf /root/kernel
