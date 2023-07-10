@@ -7,7 +7,7 @@ setenv kernel_comp_addr_r "0x05000000"
 setenv ramdisk "initrd.img-KERNELVER"
 setenv kernel "vmlinuz-KERNELVER"
 setenv bootpart_uuid "PLACEHOLDERUUID"
-setenv extra_cmdline "net.ifnames=0 fsck.repair=yes panic=10"
+setenv extra_cmdline "net.ifnames=0 fsck.repair=yes panic=3"
 
 # Import and load any custom settings
 if test -e ${devtype} ${devnum}:${distro_bootpart} config.txt; then

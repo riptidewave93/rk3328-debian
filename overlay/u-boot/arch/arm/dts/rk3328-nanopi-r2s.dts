@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 /*
- * Copyright (c) 2023 Chris Blake <chrisrblake93@gmail.com>
  * Copyright (c) 2020 David Bauer <mail@david-bauer.net>
  */
 
@@ -11,10 +10,11 @@
 #include "rk3328.dtsi"
 
 / {
-	model = "FriendlyElec NanoPi NEO3";
-	compatible = "friendlyarm,nanopi-neo3", "rockchip,rk3328";
+	model = "FriendlyElec NanoPi R2S";
+	compatible = "friendlyarm,nanopi-r2s", "rockchip,rk3328";
 
 	aliases {
+		ethernet1 = &rtl8153;
 		mmc0 = &sdmmc;
 	};
 
@@ -34,7 +34,7 @@
 		pinctrl-0 = <&reset_button_pin>;
 		pinctrl-names = "default";
 
-		reset {
+		key-reset {
 			label = "reset";
 			gpios = <&gpio0 RK_PA0 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_RESTART>;
@@ -44,22 +44,24 @@
 
 	leds {
 		compatible = "gpio-leds";
-		pinctrl-0 = <&sys_led_pin>;
+		pinctrl-0 = <&lan_led_pin>,  <&sys_led_pin>, <&wan_led_pin>;
 		pinctrl-names = "default";
 
-		pwr_led: led-0 {
-			gpios = <&rk805 0 GPIO_ACTIVE_LOW>;
-			label = "nanopi-neo3:red:pwr";
-			linux,default-trigger = "default-on";
-			default-state = "on";
+		lan_led: led-0 {
+			gpios = <&gpio2 RK_PB7 GPIO_ACTIVE_HIGH>;
+			label = "nanopi-r2s:green:lan";
 		};
 
 		sys_led: led-1 {
 			gpios = <&gpio0 RK_PA2 GPIO_ACTIVE_HIGH>;
-			label = "nanopi-neo3:green:stat";
-			linux,default-trigger = "mmc0";
+			label = "nanopi-r2s:red:sys";
+			default-state = "on";
 		};
 
+		wan_led: led-2 {
+			gpios = <&gpio2 RK_PC2 GPIO_ACTIVE_HIGH>;
+			label = "nanopi-r2s:green:wan";
+		};
 	};
 
 	vcc_io_sdio: sdmmcio-regulator {
@@ -154,8 +156,8 @@
 		#address-cells = <1>;
 		#size-cells = <0>;
 
-		rtl8211e: ethernet-phy@0 {
-			reg = <0>;
+		rtl8211e: ethernet-phy@1 {
+			reg = <1>;
 			pinctrl-0 = <&eth_phy_reset_pin>;
 			pinctrl-names = "default";
 			reset-assert-us = <10000>;
@@ -319,8 +321,16 @@
 	};
 
 	leds {
+		lan_led_pin: lan-led-pin {
+			rockchip,pins = <2 RK_PB7 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
 		sys_led_pin: sys-led-pin {
 			rockchip,pins = <0 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		wan_led_pin: wan-led-pin {
+			rockchip,pins = <2 RK_PC2 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 
@@ -394,6 +404,12 @@
 	status = "okay";
 	#address-cells = <1>;
 	#size-cells = <0>;
+
+	/* Second port is for USB 3.0 */
+	rtl8153: device@2 {
+		compatible = "usbbda,8153";
+		reg = <2>;
+	};
 };
 
 &usb_host0_ehci {

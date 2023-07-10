@@ -86,6 +86,7 @@
 		pinctrl-0 = <&sdmmc0m1_pin>;
 		pinctrl-names = "default";
 		regulator-name = "vcc_sd";
+		regulator-always-on; /* We need this to reboot! */
 		regulator-boot-on;
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
@@ -165,14 +166,14 @@
 };
 
 &i2c0 {
-  status = "okay";
+	status = "okay";
 
-  eeprom: eeprom@51 {
-    compatible = "microchip,24c02", "atmel,24c02";
-    reg = <0x51>;
-    pagesize = <16>;
-    read-only; /* MAC EEPROM */
-  };
+	eeprom: eeprom@51 {
+		compatible = "microchip,24c02", "atmel,24c02";
+		reg = <0x51>;
+		pagesize = <16>;
+		read-only; /* MAC EEPROM */
+	};
 };
 
 &i2c1 {

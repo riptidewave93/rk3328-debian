@@ -54,13 +54,13 @@ macaddr_random() {
 board_name=$(strings /proc/device-tree/compatible | head -1)
 
 case ${board_name} in
-friendlyelec,nanopi-neo3)
+friendlyarm,nanopi-neo3)
 	eth0_mac=$(get_mac_binary "/sys/bus/i2c/devices/0-0051/eeprom" 0xfa)
 	if ! grep -q "$eth0_mac" /sys/class/net/eth0/address; then
 		ip link set dev eth0 address $eth0_mac
 	fi
 	;;
-friendlyelec,nanopi-r2s)
+friendlyarm,nanopi-r2s)
   # Some boards have an i2c, and some do not
 	if [ -e "/sys/bus/i2c/devices/0-0051/eeprom" ]; then
 		base_mac=$(get_mac_binary "/sys/bus/i2c/devices/0-0051/eeprom" 0xfa)
@@ -74,6 +74,10 @@ friendlyelec,nanopi-r2s)
 	eth1_mac=$(macaddr_add $base_mac 1)
 	if ! grep -q "$eth0_mac" /sys/class/net/eth0/address; then
 		ip link set dev eth0 address $eth0_mac
+	fi
+	# If our eth1 does not exist yet, bring it up!
+	if [ ! -d "/sys/class/net/eth1" ]; then
+		modprobe r8152
 	fi
 	if ! grep -q "$eth1_mac" /sys/class/net/eth1/address; then
 		ip link set dev eth1 address $eth1_mac

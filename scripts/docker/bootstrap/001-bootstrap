@@ -23,7 +23,8 @@ export KERN_VERSION=$(find /lib/modules/ -maxdepth 1 | sort | tail -1 | xargs ba
 # Now that we have our wanted kernel in place, do the rest of our installs
 apt-get -y install git binutils ca-certificates e2fsprogs haveged parted curl \
     locales console-common openssh-server less vim net-tools wireguard-tools \
-    ntpsec u-boot-tools wget u-boot-menu initramfs-tools
+    ntpsec u-boot-tools wget u-boot-menu initramfs-tools network-manager \
+    bsdextrautils firmware-realtek
 
 # Locale gen
 locale-gen

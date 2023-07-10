@@ -65,6 +65,7 @@ mv /etc/default/u-boot.rk3328 /etc/default/u-boot
 u-boot-update
 
 # And were done!
+echo "First-Boot.sh setup script complete! Enjoy!" > /dev/console
 systemctl disable first-boot.service
 rm -f /etc/systemd/system/first-boot.service
 rm -f $0
