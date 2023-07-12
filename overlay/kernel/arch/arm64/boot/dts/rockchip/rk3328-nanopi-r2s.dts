@@ -11,7 +11,12 @@
 
 / {
 	model = "FriendlyElec NanoPi R2S";
-	compatible = "friendlyelec,nanopi-r2s", "rockchip,rk3328";
+	compatible = "friendlyarm,nanopi-r2s", "rockchip,rk3328";
+
+	aliases {
+		ethernet1 = &rtl8153;
+		mmc0 = &sdmmc;
+	};
 
 	chosen {
 		stdout-path = "serial2:1500000n8";
@@ -24,24 +29,12 @@
 		#clock-cells = <0>;
 	};
 
-	vcc_rtl8153: vcc-rtl8153-regulator {
-		compatible = "regulator-fixed";
-		gpio = <&gpio2 RK_PC6 GPIO_ACTIVE_HIGH>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&rtl8153_en_drv>;
-		regulator-always-on;
-		regulator-name = "vcc_rtl8153";
-		regulator-min-microvolt = <5000000>;
-		regulator-max-microvolt = <5000000>;
-		enable-active-high;
-	};
-
 	keys {
 		compatible = "gpio-keys";
 		pinctrl-0 = <&reset_button_pin>;
 		pinctrl-names = "default";
 
-		reset {
+		key-reset {
 			label = "reset";
 			gpios = <&gpio0 RK_PA0 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_RESTART>;
@@ -62,8 +55,7 @@
 		sys_led: led-1 {
 			gpios = <&gpio0 RK_PA2 GPIO_ACTIVE_HIGH>;
 			label = "nanopi-r2s:red:sys";
-      linux,default-trigger = "default-on";
-      default-state = "on";
+			default-state = "on";
 		};
 
 		wan_led: led-2 {
@@ -85,8 +77,8 @@
 		regulator-settling-time-us = <5000>;
 		regulator-type = "voltage";
 		startup-delay-us = <2000>;
-		states = <1800000 0x1
-			  3300000 0x0>;
+		states = <1800000 0x1>,
+			 <3300000 0x0>;
 		vin-supply = <&vcc_io_33>;
 	};
 
@@ -96,6 +88,7 @@
 		pinctrl-0 = <&sdmmc0m1_pin>;
 		pinctrl-names = "default";
 		regulator-name = "vcc_sd";
+		regulator-always-on; /* We need this to reboot! */
 		regulator-boot-on;
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
@@ -111,35 +104,17 @@
 		regulator-max-microvolt = <5000000>;
 	};
 
-  usbdrd3: usb@ff600000 {
-    compatible = "rockchip,rk3328-dwc3";
-    clocks = <&cru SCLK_USB3OTG_REF>, <&cru SCLK_USB3OTG_SUSPEND>,
-       <&cru ACLK_USB3OTG>;
-    clock-names = "ref_clk", "suspend_clk",
-            "bus_clk";
-    #address-cells = <2>;
-    #size-cells = <2>;
-    ranges;
-    status = "okay";
-
-    usbdrd_dwc3: dwc3@ff600000 {
-      compatible = "snps,dwc3";
-      reg = <0x0 0xff600000 0x0 0x100000>;
-      interrupts = <GIC_SPI 67 IRQ_TYPE_LEVEL_HIGH>;
-      dr_mode = "host";
-      phy_type = "utmi_wide";
-      snps,dis_enblslpm_quirk;
-      snps,dis-u2-freeclk-exists-quirk;
-      snps,dis_u2_susphy_quirk;
-      snps,dis-u3-autosuspend-quirk;
-      snps,dis_u3_susphy_quirk;
-      snps,dis-del-phy-power-chg-quirk;
-      snps,dis-tx-ipgap-linecheck-quirk;
-      snps,xhci-slow-suspend-quirk;
-      snps,xhci-trb-ent-quirk;
-      status = "okay";
-    };
-  };
+	vdd_5v_lan: vdd-5v-lan {
+		compatible = "regulator-fixed";
+		enable-active-high;
+		gpio = <&gpio2 RK_PC6 GPIO_ACTIVE_HIGH>;
+		pinctrl-0 = <&lan_vdd_pin>;
+		pinctrl-names = "default";
+		regulator-name = "vdd_5v_lan";
+		regulator-always-on;
+		regulator-boot-on;
+		vin-supply = <&vdd_5v>;
+	};
 };
 
 &cpu0 {
@@ -156,6 +131,10 @@
 
 &cpu3 {
 	cpu-supply = <&vdd_arm>;
+};
+
+&display_subsystem {
+	status = "disabled";
 };
 
 &gmac2io {
@@ -178,8 +157,6 @@
 		#size-cells = <0>;
 
 		rtl8211e: ethernet-phy@1 {
-      compatible = "ethernet-phy-id001c.c915",
-				           "ethernet-phy-ieee802.3-c22";
 			reg = <1>;
 			pinctrl-0 = <&eth_phy_reset_pin>;
 			pinctrl-names = "default";
@@ -191,14 +168,14 @@
 };
 
 &i2c0 {
-  status = "okay";
+	status = "okay";
 
-  eeprom: eeprom@51 {
-    compatible = "microchip,24c02", "atmel,24c02";
-    reg = <0x51>;
-    pagesize = <16>;
-    read-only; /* MAC EEPROM */
-  };
+	eeprom: eeprom@51 {
+		compatible = "microchip,24c02", "atmel,24c02";
+		reg = <0x51>;
+		pagesize = <16>;
+		read-only; /* MAC EEPROM */
+	};
 };
 
 &i2c1 {
@@ -337,7 +314,7 @@
 		};
 	};
 
-	ethernet-phy {
+	gmac2io {
 		eth_phy_reset_pin: eth-phy-reset-pin {
 			rockchip,pins = <1 RK_PC2 RK_FUNC_GPIO &pcfg_pull_down>;
 		};
@@ -357,6 +334,12 @@
 		};
 	};
 
+	lan {
+		lan_vdd_pin: lan-vdd-pin {
+			rockchip,pins = <2 RK_PC6 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+
 	pmic {
 		pmic_int_l: pmic-int-l {
 			rockchip,pins = <1 RK_PD0 RK_FUNC_GPIO &pcfg_pull_up>;
@@ -366,12 +349,6 @@
 	sd {
 		sdio_vcc_pin: sdio-vcc-pin {
 			rockchip,pins = <1 RK_PD4 RK_FUNC_GPIO &pcfg_pull_up>;
-		};
-	};
-
-	usb {
-		rtl8153_en_drv: rtl8153-en-drv {
-			rockchip,pins = <2 RK_PC6 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 };
@@ -420,6 +397,19 @@
 &usb20_otg {
 	status = "okay";
 	dr_mode = "host";
+};
+
+&usbdrd3 {
+	dr_mode = "host";
+	status = "okay";
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	/* Second port is for USB 3.0 */
+	rtl8153: device@2 {
+		compatible = "usbbda,8153";
+		reg = <2>;
+	};
 };
 
 &usb_host0_ehci {

@@ -1,33 +1,3 @@
 // SPDX-License-Identifier: GPL-2.0+
-/*
- * (C) Copyright 2020 Chris Blake <chrisrblake93@gmail.com>
- */
 
-#include "rk3328-u-boot.dtsi"
-#include "rk3328-sdram-ddr4-666.dtsi"
-/ {
-  chosen {
-    u-boot,spl-boot-order = "same-as-spl", &sdmmc, &emmc;
-  };
-};
-
-&gpio0 {
-  u-boot,dm-spl;
-};
-
-&pinctrl {
-  u-boot,dm-spl;
-};
-
-&sdmmc0m1_gpio {
-  u-boot,dm-spl;
-};
-
-&pcfg_pull_up_4ma {
-  u-boot,dm-spl;
-};
-
-/* Need this and all the pinctrl/gpio stuff above to set pinmux */
-&vcc_sd {
-  u-boot,dm-spl;
-};
+#include "rk3328-nanopi-r2s-u-boot.dtsi"

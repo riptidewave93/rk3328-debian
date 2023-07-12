@@ -1,0 +1,52 @@
+#!/bin/bash
+
+echo "Starting 001-bootstrap within chroot!"
+
+export DEBIAN_FRONTEND=noninteractive
+
+# Fix slow bootstrap
+ulimit -n 1024
+
+# Conf debconf
+debconf-set-selections /debconf.set
+rm -f /debconf.set
+
+# Initial package install
+apt-get clean
+apt-get update
+dpkg -i /root/kernel/linux-*.deb # Install our kernel first
+apt-mark hold linux-image-* # We do not want these, as we run our own kernel!
+
+# Export kernel info
+export KERN_VERSION=$(find /lib/modules/ -maxdepth 1 | sort | tail -1 | xargs basename )
+
+# Now that we have our wanted kernel in place, do the rest of our installs
+apt-get -y install git binutils ca-certificates e2fsprogs haveged parted curl \
+    locales console-common openssh-server less vim net-tools wireguard-tools \
+    ntpsec u-boot-tools wget u-boot-menu initramfs-tools network-manager \
+    bsdextrautils firmware-realtek
+
+# Locale gen
+locale-gen
+
+# Setup root PW
+echo "root:debian" | chpasswd
+
+# Allow root SSH login with PW
+sed -i 's|#PermitRootLogin prohibit-password|PermitRootLogin yes|g' /etc/ssh/sshd_config
+
+# Setup boot partition
+mkdir -p /boot/rockchip
+mv /root/kernel/*.dtb /boot/rockchip/
+sed -i "s|KERNELVER|${KERN_VERSION}|g" /boot/boot.cmd
+mkimage -C none -A arm -T script -d /boot/boot.cmd /boot/boot.scr
+
+# Cleanup stuff we don't want floating around
+apt-get autoclean
+apt-get --purge -y autoremove
+systemctl stop ssh.service
+systemctl enable first-boot.service
+rm -f /etc/ssh/ssh_host_*
+rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+rm -rf /boot.bak /boot/extlinux # Bad initial generation, fall back to boot.scr
+rm -rf /root/kernel
