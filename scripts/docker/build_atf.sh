@@ -1,7 +1,6 @@
 #!/bin/bash
 set -e
 
-docker_scripts_path="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 scripts_path="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 . ${scripts_path}/vars.sh
 
@@ -15,7 +14,7 @@ export GCC_COLORS=auto
 export CROSS_COMPILE=${toolchain_cross_compile}
 export ARCH=arm64
 
-# cd to said new builddir
+# Build the ATF
 cd ${atf_builddir}/${atf_filename%.zip}
 make LOG_LEVEL=10 PLAT=${atf_platform} bl31
 mkdir -p ${build_path}/atf

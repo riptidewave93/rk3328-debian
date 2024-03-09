@@ -1,7 +1,6 @@
 #!/bin/bash
 set -e
 
-docker_scripts_path="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 scripts_path="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 . ${scripts_path}/vars.sh
 
@@ -32,13 +31,30 @@ if [[ -d ${root_path}/overlay/${kernel_overlay_dir}/ ]]; then
     cp -R ${root_path}/overlay/${kernel_overlay_dir}/* ./
 fi
 
-# Build as normal
+# Build as normal, with our extra version set to a timestamp
 make ${kernel_config}
-make -j`getconf _NPROCESSORS_ONLN` bindeb-pkg dtbs
+#make menuconfig
+make -j`getconf _NPROCESSORS_ONLN` EXTRAVERSION=-$(date +%Y%m%d-%H%M%S) bindeb-pkg dtbs
 
-# Prep for storage of important bits
+# Save our config
 mkdir -p ${build_path}/kernel
+make savedefconfig
+mv defconfig ${build_path}/kernel/kernel_config
+
+# Get our kernel version (fully)
+KERNEL_VERSION=$(ls ${kernel_builddir}/linux-headers-*.deb | awk -F- '{ print $3"-"$6"-"$7 }')
+
+# Now build our deb for the dtb's
+mkdir -p ${build_path}/kernel/linux-dtbs-${KERNEL_VERSION}/boot/dtb-${KERNEL_VERSION}/rockchip
+mv ./scripts/dtb-deb/DEBIAN ${build_path}/kernel/linux-dtbs-${KERNEL_VERSION}/
+sed -i "s|KERNELVERSION|${KERNEL_VERSION}|g" ${build_path}/kernel/linux-dtbs-${KERNEL_VERSION}/DEBIAN/control
+sed -i "s|KERNELVERSION|${KERNEL_VERSION}|g" ${build_path}/kernel/linux-dtbs-${KERNEL_VERSION}/DEBIAN/conffiles
 for i in "${supported_devices[@]}"; do
-	cp arch/arm64/boot/dts/rockchip/${i}.dtb ${build_path}/kernel
+	cp arch/arm64/boot/dts/rockchip/${i}.dtb ${build_path}/kernel/linux-dtbs-${KERNEL_VERSION}/boot/dtb-${KERNEL_VERSION}/rockchip
 done
-cp ${kernel_builddir}/linux-*.deb ${build_path}/kernel
+cd ${build_path}/kernel
+dpkg-deb --root-owner-group --build linux-dtbs-${KERNEL_VERSION}
+rm -rf ${build_path}/kernel/linux-dtbs-${KERNEL_VERSION}
+
+# Move our debs to the kernel dir
+mv ${kernel_builddir}/linux-*.deb ${build_path}/kernel

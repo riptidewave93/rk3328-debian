@@ -16,17 +16,17 @@ fi
 
 if [ ! -f ${build_path}/atf/bl31.bin ]; then
     debug_msg "Docker: Building ATF..."
-    docker run --rm -v "${root_path}:/repo:Z" -it rk3328-debian:builder /repo/scripts/docker/build_atf.sh
+    docker run --ulimit nofile=1024 --rm -v "${root_path}:/repo:Z" -it ${docker_tag} /repo/scripts/docker/build_atf.sh
 fi
 
 if [ ! -d ${build_path}/uboot ]; then
     debug_msg "Docker: Building U-Boot..."
-    docker run --rm -v "${root_path}:/repo:Z" -it rk3328-debian:builder /repo/scripts/docker/build_uboot.sh
+    docker run --ulimit nofile=1024 --rm -v "${root_path}:/repo:Z" -it ${docker_tag} /repo/scripts/docker/build_uboot.sh
 fi
 
 if [ ! -d ${build_path}/kernel ]; then
     debug_msg "Docker: Building Kernel..."
-    docker run --rm -v "${root_path}:/repo:Z" -it rk3328-debian:builder /repo/scripts/docker/build_kernel.sh
+    docker run --ulimit nofile=1024 --rm -v "${root_path}:/repo:Z" -it ${docker_tag} /repo/scripts/docker/build_kernel.sh
 fi
 
 debug_msg "Doing safety checks... please enter your password for sudo if prompted..."
@@ -52,7 +52,7 @@ if [ -f ${build_path}/rootfs.ext4 ]; then
 fi
 
 debug_msg "Docker: Generating rootfs and boot partitions..."
-docker run --rm -v "${root_path}:/repo:Z" -it rk3328-debian:builder /repo/scripts/docker/run_mkimage_initial.sh
+docker run --ulimit nofile=1024 --rm -v "${root_path}:/repo:Z" -it ${docker_tag} /repo/scripts/docker/run_mkimage_initial.sh
 
 debug_msg "Note: You might be asked for your password for losetup and mounting of said loopback devices since sudo is used..."
 
@@ -73,7 +73,7 @@ sudo rm -f ${build_path}/rootfs/placeholder ${build_path}/rootfs/boot/placeholde
 # SAFETY NET - trap it, even tho we have makefile with set -e
 debug_msg "Docker: debootstraping..."
 trap "sudo umount ${build_path}/rootfs/boot; sudo umount ${build_path}/rootfs; sudo losetup -d ${boot_loop_dev}; sudo losetup -d ${rootfs_loop_dev}" SIGINT SIGTERM
-docker run --rm --privileged --cap-add=ALL -v /dev:/dev -v "${root_path}:/repo:Z" -it rk3328-debian:builder /repo/scripts/docker/run_debootstrap.sh
+docker run --ulimit nofile=1024 --rm --privileged --cap-add=ALL -v /dev:/dev -v "${root_path}:/repo:Z" -it ${docker_tag} /repo/scripts/docker/run_debootstrap.sh
 
 debug_msg "Note: You might be asked for your password for losetup and umount since we are cleaning up mounts..."
 debug_msg "Cleaning up..."

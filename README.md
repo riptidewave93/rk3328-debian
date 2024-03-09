@@ -2,9 +2,9 @@
 
 Build script to build a Debian 12 image for FriendlyELEC NanoPi RK3328 based boards, as well as all dependencies. This includes the following:
 
-- Mainline Linux Kernel - [linux-6.4.y](https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/log/?h=linux-6.4.y)
+- Mainline Linux Kernel - [linux-6.7.y](https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/log/?h=linux-6.7.y)
 - Arm Trusted Firmware - [arm-trusted-firmware/master branch](https://github.com/ARM-software/arm-trusted-firmware/tree/master)
-- Mainline U-Boot - [v2023.07-rc6](https://github.com/u-boot/u-boot/tree/v2023.07-rc6)
+- Mainline U-Boot - [v2024.04-rc3](https://github.com/u-boot/u-boot/tree/v2024.04-rc3)
 
 Note that there are patches/modifications applied to the kernel and u-boot. The changes made can be seen in the `./patches` and `./overlay` directories. Also, a `./downloads` directory is generated to store a copy of the toolchain during the first build.
 

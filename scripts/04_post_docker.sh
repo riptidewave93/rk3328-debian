@@ -14,12 +14,13 @@ fi
 mkdir -p ${build_path}/final
 
 # Kick off the docker to do the magics for us, since we need genimage
-docker run --rm -v "${root_path}:/repo:Z" -it rk3328-debian:builder /repo/scripts/docker/run_mkimage_final.sh
+docker run --rm -v "${root_path}:/repo:Z" -it ${docker_tag} /repo/scripts/docker/run_mkimage_final.sh
 
 # Just create our final dir and move bits over
 TIMESTAMP=`date +%Y%m%d-%H%M`
-mkdir -p ${root_path}/output/${TIMESTAMP}
+mkdir -p ${root_path}/output/${TIMESTAMP}/kernel
 mv ${build_path}/final/debian*.img.gz ${root_path}/output/${TIMESTAMP}/
+cp ${build_path}/kernel/linux-*.deb ${root_path}/output/${TIMESTAMP}/kernel/
 rm -rf ${build_path}/final
 
 debug_msg "Finished 04_post_docker.sh"

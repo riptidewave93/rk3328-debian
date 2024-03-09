@@ -1,19 +1,19 @@
 #!/bin/bash
 set -e
 
-GENIMAGE_SRC="https://github.com/pengutronix/genimage/releases/download/v16/genimage-16.tar.xz"
-GENIMAGE_FILENAME="$(basename $GENIMAGE_SRC)"
-GENIMAGE_REPOPATH="${GENIMAGE_FILENAME%.tar.xz}"
+# setup_mkimage is special, as it's copied to the dockerfile and ran
+# same with vars.sh which we put in place
+. /vars.sh
 
 cd /usr/src
 echo "Downloading genimage..."
-wget ${GENIMAGE_SRC} -O /usr/src/${GENIMAGE_FILENAME}
+wget ${genimage_src} -O /usr/src/${genimage_filename}
 
 echo "Extracting genimage..."
-tar -xJf /usr/src/${GENIMAGE_FILENAME}
+tar -xJf /usr/src/${genimage_filename}
 
 echo "Building genimage..."
-cd ./${GENIMAGE_REPOPATH}
+cd ./${genimage_repopath}
 ./configure
 make
 
@@ -21,6 +21,7 @@ echo "Installing genimage..."
 make install
 
 echo "Cleaning up..."
-rm -rf /usr/src/${GENIMAGE_REPOPATH}*
+rm -rf /vars.sh # We wanna use it n burn it
+rm -rf /usr/src/${genimage_repopath}*
 
 exit 0

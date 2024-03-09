@@ -28,13 +28,13 @@ if [[ -d ${root_path}/overlay/${fs_overlay_dir}/ ]]; then
 	cp -R ${root_path}/overlay/${fs_overlay_dir}/* ./
 fi
 
-# Apply our disk signature to boot.cmd
+# Apply our disk signature to fstab
 UBOOTUUID=$(cat ${build_path}/disk-signature.txt | awk '{print tolower($0)}')
-sed -i "s|PLACEHOLDERUUID|${UBOOTUUID:2}|g" ./boot/boot.cmd
+sed -i "s|PLACEHOLDERUUID|${UBOOTUUID:2}|g" ${build_path}/rootfs/etc/fstab
 
 # Hostname
 echo "${distrib_name}" > ${build_path}/rootfs/etc/hostname
-echo "127.0.1.1	${distrib_name}" >> ${build_path}/rootfs/etc/host
+echo "127.0.1.1	${distrib_name}" >> ${build_path}/rootfs/etc/hosts
 
 # Console settings
 echo "console-common	console-data/keymap/policy	select	Select keymap from full list
@@ -43,6 +43,9 @@ console-common	console-data/keymap/full	select	us
 
 # Copy over kernel goodies
 cp -r ${build_path}/kernel ${build_path}/rootfs/root/
+
+# Remove the debug kernel
+#rm ${build_path}/rootfs/root/kernel/linux-image-*-dbg_*.deb
 
 # Kick off bash setup script within chroot
 cp ${docker_scripts_path}/bootstrap/001-bootstrap ${build_path}/rootfs/bootstrap

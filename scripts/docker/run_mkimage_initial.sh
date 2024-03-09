@@ -1,7 +1,6 @@
 #!/bin/bash
 set -e
 
-docker_scripts_path="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 scripts_path="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 . ${scripts_path}/vars.sh
 

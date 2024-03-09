@@ -15,7 +15,7 @@ else
 fi
 
 # Always build to pickup changes/updates/improvements
-debug_msg "Building rk3328-debian:builder"
-docker build -t rk3328-debian:builder ${root_path}
+debug_msg "Building ${docker_tag}"
+docker build -t ${docker_tag} ${root_path}
 
 debug_msg "Finished 01_pre_docker.sh"

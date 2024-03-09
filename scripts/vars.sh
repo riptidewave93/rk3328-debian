@@ -3,6 +3,9 @@
 root_path="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 build_path="${root_path}/BuildEnv"
 
+# Docker image name
+docker_tag=rk3328-builder:builder
+
 # Supported Devices
 supported_devices=(rk3328-nanopi-neo3 rk3328-nanopi-r2s)
 
@@ -18,19 +21,24 @@ atf_filename="arm-trusted-firmware-master.zip"
 atf_platform="rk3328"
 
 # U-Boot
-uboot_src="https://github.com/u-boot/u-boot/archive/refs/tags/v2023.07-rc6.zip"
-uboot_filename="u-boot-2023.07-rc6.zip"
+uboot_src="https://github.com/u-boot/u-boot/archive/refs/tags/v2024.04-rc3.zip"
+uboot_filename="u-boot-2024.04-rc3.zip"
 uboot_overlay_dir="u-boot"
 
 # Kernel
-kernel_src="https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/snapshot/linux-6.4.y.tar.gz"
-kernel_filename="linux-6.4.y.tar.gz"
+kernel_src="https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/snapshot/linux-6.7.y.tar.gz"
+kernel_filename="linux-6.7.y.tar.gz"
 kernel_config="rk3328_defconfig"
 kernel_overlay_dir="kernel"
 
+# Genimage
+genimage_src="https://github.com/pengutronix/genimage/releases/download/v16/genimage-16.tar.xz"
+genimage_filename="$(basename $genimage_src)"
+genimage_repopath="${genimage_filename%.tar.xz}"
+
 # Distro
 distrib_name="debian"
-deb_mirror="https://mirrors.kernel.org/debian/"
+deb_mirror="http://ftp.us.debian.org/debian"
 deb_release="bookworm"
 deb_arch="arm64"
 fs_overlay_dir="filesystem"

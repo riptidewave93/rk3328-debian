@@ -2,6 +2,7 @@
 FROM debian:12
 
 RUN mkdir /repo
+COPY ./scripts/vars.sh /vars.sh
 COPY ./scripts/docker/setup_mkimage.sh /setup_mkimage.sh
 
 RUN apt-get update && apt-get install -yq \
@@ -16,6 +17,7 @@ RUN apt-get update && apt-get install -yq \
     debhelper \
     device-tree-compiler \
     dosfstools \
+    dwarves \
     fakeroot \
     flex \
     genext2fs \
@@ -24,6 +26,7 @@ RUN apt-get update && apt-get install -yq \
     kpartx \
     libconfuse-common \
     libconfuse-dev \
+    libelf-dev \
     libncurses-dev \
     libssl-dev \
     lvm2 \

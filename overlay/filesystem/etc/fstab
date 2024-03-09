@@ -1,0 +1,2 @@
+PARTUUID=PLACEHOLDERUUID-02      /       ext4    discard,errors=remount-ro   0   1
+PARTUUID=PLACEHOLDERUUID-01      /boot   vfat    defaults                    0   1
